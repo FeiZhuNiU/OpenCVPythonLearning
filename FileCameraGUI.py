@@ -36,7 +36,7 @@ print(img.shape)
 byte_array = bytearray(img)
 print(len(byte_array))
 img2 = np.array(byte_array).reshape(720, 180)
-cv2.imshow("reshaped", img2)
+# cv2.imshow("reshaped", img2)
 """
 (360, 360)
 129600
@@ -49,4 +49,27 @@ print(img.dtype)
 129600
 uint8
 """
+
+video = cv2.VideoCapture("street.mp4")
+
+print(video.get(cv2.CAP_PROP_FPS))
+print(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+print(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+
+success, frame = video.read()
+while success and cv2.waitKey(1) & 0xFF != ord('q'):
+    cv2.imshow('frame', frame)
+    success, frame = video.read()
+
+
+# video = cv2.VideoCapture("street.mp4")
+# while video.isOpened():
+#     success, frame = video.read()
+#     if success and cv2.waitKey(1) & 0xFF != ord('q'):
+#         cv2.imshow('frame', frame)
+#     else:
+#         break
+cv2.destroyAllWindows()
+video.release()
+
 cv2.waitKey()
