@@ -4,9 +4,9 @@ import cv2
 from cvgui.managers import WindowManager, CaptureManager
 
 
-class Cameo(object):
+class Scratch(object):
     def __init__(self, video):
-        self._window_manager = WindowManager('Cameo', self.on_keypress)
+        self._window_manager = WindowManager('Scratch', self.on_keypress)
         self._capture_manager = CaptureManager(cv2.VideoCapture(video), self._window_manager, True)
 
     def run(self):
@@ -14,9 +14,10 @@ class Cameo(object):
         while self._window_manager.is_window_created:
             self._capture_manager.enter_frame()
             frame = self._capture_manager.frame
-
-            # TODO 对frame进行处理
-
+            if frame is not None:
+                processed_frame = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                # TODO 对frame进行其他处理
+                self._capture_manager.frame = processed_frame
             self._capture_manager.exit_frame()
             self._window_manager.process_events()
 
@@ -38,4 +39,4 @@ class Cameo(object):
 
 
 if __name__ == "__main__":
-    Cameo("street.mp4").run()
+    Scratch("street.mp4").run()
