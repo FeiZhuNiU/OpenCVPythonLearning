@@ -17,7 +17,7 @@ class Scratch(object):
             self._capture_manager.enter_frame()
             frame = self._capture_manager.frame
             if frame is not None:
-                self._capture_manager.frame = image_processing.filter_out_red(frame)
+                self._capture_manager.frame = image_processing.filter_out_black(frame)
             self._capture_manager.exit_frame()
             self._window_manager.process_events()
 

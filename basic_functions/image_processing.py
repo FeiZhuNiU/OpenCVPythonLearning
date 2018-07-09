@@ -21,6 +21,16 @@ def filter_out_red(img):
         return cv2.bitwise_and(img, img, mask=mask)
 
 
+def filter_out_black(img):
+    if img is not None:
+        hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+        lower_black = np.array([0, 0, 0])
+        upper_black = np.array([180, 100, 88])
+        # inRange()方法返回的矩阵只包含0,1 0表示不在区间内
+        mask = cv2.inRange(hsv, lower_black, upper_black)
+        return cv2.bitwise_and(img, img, mask=mask)
+
+
 img1 = np.array([[[2, 2, 2], [2, 2, 2]], [[2, 2, 2], [2, 2, 2]]])
 img2 = np.array([[[2, 3, 3], [2, 3, 3]], [[2, 3, 5], [2, 3, 3]]])
 mask = np.uint8([[1, 0], [1, 1]])
