@@ -50,26 +50,32 @@ print(img.dtype)
 uint8
 """
 
-video = cv2.VideoCapture("street.mp4")
-
-print(video.get(cv2.CAP_PROP_FPS))
-print(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
-print(video.get(cv2.CAP_PROP_FRAME_WIDTH))
-
-success, frame = video.read()
-while success and cv2.waitKey(1) & 0xFF != ord('q'):
-    cv2.imshow('frame', frame)
-    success, frame = video.read()
-
-
 # video = cv2.VideoCapture("street.mp4")
-# while video.isOpened():
-#     success, frame = video.read()
-#     if success and cv2.waitKey(1) & 0xFF != ord('q'):
-#         cv2.imshow('frame', frame)
-#     else:
-#         break
+# print(video.get(cv2.CAP_PROP_FPS))
+# print(video.get(cv2.CAP_PROP_FRAME_HEIGHT))
+# print(video.get(cv2.CAP_PROP_FRAME_WIDTH))
+
+video = cv2.VideoCapture("street.mp4")
+# video = cv2.VideoCapture("outputVideo.avi")
+while video.isOpened():
+    if video.grab() and cv2.waitKey(1) & 0xFF != ord('q'):
+        success, frame = video.retrieve()
+        if success:
+            cv2.imshow('frame', frame)
+    else:
+        break
 cv2.destroyAllWindows()
 video.release()
+
+video = cv2.VideoCapture("street.mp4")
+fps = video.get(cv2.CAP_PROP_FPS)
+size = (int(video.get(cv2.CAP_PROP_FRAME_WIDTH)), int(video.get(cv2.CAP_PROP_FRAME_HEIGHT)))
+video_writer = cv2.VideoWriter('outputVideo.avi', cv2.VideoWriter_fourcc(*'XVID'), fps, size)
+video = cv2.VideoCapture("street.mp4")
+success, frame = video.read()
+while success:
+    video_writer.write(frame)
+    success, frame = video.read()
+video_writer.release()
 
 cv2.waitKey()
