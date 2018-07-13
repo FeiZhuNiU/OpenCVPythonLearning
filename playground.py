@@ -1,111 +1,99 @@
 import cv2
 import numpy as np
 from matplotlib import pyplot as plt
-from scipy import ndimage
 
-# # shape: 360*360
-# img = cv2.imread("laugh.jpg", cv2.IMREAD_GRAYSCALE)
-# # 返回的是复数 dtype.complex128
-# fft = np.fft.fft2(img)
-# # 平移
-# fftshift = np.fft.fftshift(fft)
-# # 频谱 dtype.float64 magnitude_spectrum[180,180] = 329.2611
-# magnitude_spectrum = 20 * np.log(np.abs(fftshift))
-# # 如果想用cv2.imshow()显示
-# # magnitude_spectrum_uint8 = np.uint8(255 * (magnitude_spectrum / np.max(magnitude_spectrum)))
-# # cv2.imshow("magnitude_spectrum_uint8", magnitude_spectrum_uint8)
-# rows, cols = img.shape
-# crow, ccol = rows / 2, cols / 2
-# # 频谱中心区域添加60×60的蒙板，相当于过滤了低频部分
-# fftshift[int(crow - 30):int(crow + 30), int(ccol - 30):int(ccol + 30)] = 0
-# magnitude_spectrum_filter = 20 * np.log(np.abs(fftshift))
-# # 中心平移回到左上角
-# f_ishift = np.fft.ifftshift(fftshift)
-# # 使用FFT逆变换，结果是复数
-# img_back = np.fft.ifft2(f_ishift)
-# img_back = np.abs(img_back)
-# # img_back_uint8 = np.uint8(255 * (img_back / np.max(img_back)))
-# # cv2.imshow("img_back_uint8", img_back_uint8)
-# # plt.subplot(221)
-# # plt.imshow(img, cmap='gray')
-# # plt.title('laugh.jpg')
-# # # 省略x,y坐标
-# # plt.xticks([]), plt.yticks([])
-# # plt.subplot(222), plt.imshow(magnitude_spectrum, cmap='gray')
-# # plt.title('magnitude_spectrum'), plt.xticks([]), plt.yticks([])
-# # plt.subplot(223), plt.imshow(magnitude_spectrum_filter, cmap='gray')
-# # plt.title('High Pass Filter'), plt.xticks([]), plt.yticks([])
-# # plt.subplot(224), plt.imshow(img_back, cmap='gray')
-# # plt.title('High Pass Result'), plt.xticks([]), plt.yticks([])
-# # plt.show()
+# img = cv2.imread('laugh.jpg', 0)
+# img_filtered = cv2.bilateralFilter(img, 21, 75, 75)
+# # laplacian = cv2.Laplacian(img, cv2.CV_64F)
+# # sobelx = cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=5)
+# # sobely = cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=5)
+# # sobelxy = cv2.Sobel(img, cv2.CV_64F, 1, 1, ksize=5)
+# # sobel = cv2.addWeighted(sobelx, 0.5, sobely, 0.5, 0)
+# # sherr = cv2.addWeighted(cv2.Sobel(img, cv2.CV_64F, 1, 0, ksize=-1), 0.5, cv2.Sobel(img, cv2.CV_64F, 0, 1, ksize=-1),
+# #                         0.5, 0)
+#
+# canny = cv2.Canny(img, 100, 200)
+# canny_2 = cv2.Canny(img_filtered, 50, 150)
+# print(canny.dtype)
+# threshold, laplacian = cv2.threshold(cv2.convertScaleAbs(laplacian), 0, 255, cv2.THRESH_OTSU)
 #
 #
-# # img = cv2.imread('laugh.jpg', cv2.IMREAD_GRAYSCALE)
-# # dft = cv2.dft(np.float32(img), flags=cv2.DFT_COMPLEX_OUTPUT)
-# # # 平移还是要靠numpy
-# # dft_shift = np.fft.fftshift(dft)
-# # magnitude_spectrum = 20 * np.log(cv2.magnitude(dft_shift[:, :, 0], dft_shift[:, :, 1]))
-# # print(dft.dtype)
-# # print(dft_shift.dtype)
-# #
-# # rows, cols = img.shape
-# # crow, ccol = int(rows / 2), int(cols / 2)
-# #
-# # # create a mask first, center square is 1, remaining all zeros
-# # mask = np.ones((rows, cols, 2), np.uint8)
-# # mask[crow - 30:crow + 30, ccol - 30:ccol + 30] = 0
-# #
-# # # apply mask and inverse DFT
-# # fshift = dft_shift * mask
-# # f_ishift = np.fft.ifftshift(fshift)
-# # img_back = cv2.idft(f_ishift)
-# # img_back = cv2.magnitude(img_back[:, :, 0], img_back[:, :, 1])
-# #
-# # plt.subplot(311), plt.imshow(img, cmap='gray')
-# # plt.title('laugh.jpg'), plt.xticks([]), plt.yticks([])
-# # plt.subplot(312), plt.imshow(magnitude_spectrum, cmap='gray')
-# # plt.title('Magnitude Spectrum'), plt.xticks([]), plt.yticks([])
-# # plt.subplot(313), plt.imshow(img_back, cmap='gray')
-# # plt.title('result'), plt.xticks([]), plt.yticks([])
-# #
-# # plt.show()
-#
-# img = cv2.imread('laugh.jpg', cv2.IMREAD_GRAYSCALE)
-# rows, cols = img.shape
-# nrows = cv2.getOptimalDFTSize(rows)
-# ncols = cv2.getOptimalDFTSize(cols)
-# nimg = np.zeros((nrows, ncols))
-# nimg[:rows, :cols] = img
+# threshold, sobelxy = cv2.threshold(cv2.convertScaleAbs(sobelxy), 0, 255, cv2.THRESH_OTSU)
+# sobelx = cv2.convertScaleAbs(sobelx)
+# sobely = cv2.convertScaleAbs(sobely)
+# sobel = cv2.convertScaleAbs(sobel)
+# sherr = cv2.convertScaleAbs(sherr)
 
-img = cv2.imread("laugh.jpg", cv2.IMREAD_GRAYSCALE)
-kernel_3 = np.array(
-    [
-        [-1, -1, -1],
-        [-1, 8, -1],
-        [-1, -1, -1]
-    ]
-)
-kernel_5 = np.array(
-    [
-        [-1, -1, -1, -1, -1],
-        [-1, 1, 2, 1, -1],
-        [-1, 2, 4, 2, -1],
-        [-1, 1, 2, 1, -1],
-        [-1, -1, -1, -1, -1]
-    ]
-)
-dst_3 = cv2.filter2D(img, -1, kernel=kernel_3)
-dst_5 = cv2.filter2D(img, -1, kernel=kernel_5)
-plt.subplot(221), plt.imshow(img, cmap='gray'), plt.title('Original')
-plt.xticks([]), plt.yticks([])
-plt.subplot(222), plt.imshow(dst_3, cmap='gray'), plt.title('Kernel_3 Result')
-plt.xticks([]), plt.yticks([])
-plt.subplot(223), plt.imshow(dst_5, cmap='gray'), plt.title('Kernel_5 Result')
-plt.xticks([]), plt.yticks([])
+# titles = ['Original', 'Laplacian', 'Sobel dx=1', 'Sobel dy=1', 'Sobel', 'Sobel dx=dy=1', 'Sherr', 'canny']
+# titles = ['Original', 'canny', 'canny_2']
+# # imgs = [img, laplacian, sobelx, sobely, sobel, sobelxy, sherr, canny]
+# imgs = [img, canny, canny_2]
+#
+# for i in range(3):
+#     plt.subplot(2, 2, i + 1), plt.imshow(imgs[i], cmap='gray')
+#     plt.title(titles[i]), plt.xticks([]), plt.yticks([])
+#
+# plt.show()
+
+# # b, g, r = cv2.split(img)
+# # img = cv2.merge((r, g, b))
+#
+# kernel_3 = np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]])
+# cv2.imshow("original", img)
+# dst1 = cv2.blur(img, (21, 21))
+# dst2 = cv2.GaussianBlur(img, (21, 21), 0)
+# dst3 = cv2.medianBlur(img, 21)
+# dst4 = cv2.bilateralFilter(img, 21, 75, 75)
+# dst5 = ndimage.convolve(img, kernel_3)
+# titles = ["Original", "blur", "gaussian", "median", "bilateral", "ndimage"]
+# imgs = [img, dst1, dst2, dst3, dst4, dst5]
+# for i in range(6):
+#     plt.subplot(3, 2, i + 1), plt.imshow(imgs[i], cmap='gray'), plt.title(titles[i])
+#     plt.xticks([]), plt.yticks([])
+# plt.show()
+print(cv2.__version__)
+
+img = cv2.imread('laugh.jpg', cv2.IMREAD_GRAYSCALE)
+img = cv2.bilateralFilter(img, 21, 75, 75)
+laplacian = cv2.convertScaleAbs(cv2.Laplacian(img, cv2.CV_64F))
+_, img = cv2.threshold(laplacian, 20, 255, cv2.THRESH_BINARY)
+
+_, contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+img_contour_1 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+img_contour_2 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+max_len = max(map(lambda x: len(x), contours))
+longest_contour = list(filter(lambda x: len(x) == max_len, contours))
+
+epsilon_1 = 0.01 * cv2.arcLength(longest_contour[0], True)
+epsilon_2 = 0.02 * cv2.arcLength(longest_contour[0], True)
+
+
+approx_1 = cv2.approxPolyDP(longest_contour[0], epsilon_1, True)
+approx_2 = cv2.approxPolyDP(longest_contour[0], epsilon_2, True)
+
+
+cv2.drawContours(img_contour_1, list([approx_1]), -1, (0, 255, 0), 2)
+cv2.drawContours(img_contour_2, list([approx_2]), -1, (0, 255, 0), 2)
+titles = ['Original Binary', 'approx_epsilon_smaller', 'approx_epsilon_bigger']
+imgs = [img, img_contour_1, img_contour_2]
+for i in range(3):
+    plt.subplot(3, 1, i + 1), plt.imshow(imgs[i], cmap='gray'), plt.title(titles[i])
+    plt.xticks([]), plt.yticks([])
 plt.show()
 
+# erosion = cv2.erode(img, kernel)
+# dilation = cv2.dilate(img, kernel)
+# opening = cv2.morphologyEx(img, cv2.MORPH_OPEN, kernel)
+# closing = cv2.morphologyEx(img, cv2.MORPH_CLOSE, kernel)
+# morph_gradient = dilation - erosion
 
+# tophat = cv2.morphologyEx(img, cv2.MORPH_TOPHAT, kernel)
+# blackhat = cv2.morphologyEx(img, cv2.MORPH_BLACKHAT, kernel)
+#
+# titles = ["Binary", "erosion", "dilation", "opening", "closing", "tophat", "blackhat", "gradient"]
+# imgs = [img, erosion, dilation, opening, closing, tophat, blackhat, morph_gradient]
+# for i in range(8):
+#     plt.subplot(3, 3, i + 1), plt.imshow(imgs[i], cmap='gray'), plt.title(titles[i])
+#     plt.xticks([]), plt.yticks([])
+# plt.show()
 cv2.waitKey()
-dst_3_scipy = ndimage.convolve(img, kernel_5)
-plt.subplot(223), plt.imshow(dst_3_scipy, cmap='gray'), plt.title('Kernal_3 scipy Result')
-plt.xticks([]), plt.yticks([])
