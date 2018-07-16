@@ -61,6 +61,7 @@ _, img = cv2.threshold(laplacian, 20, 255, cv2.THRESH_BINARY)
 _, contours, hierarchy = cv2.findContours(img, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 img_contour_1 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 img_contour_2 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
+img_contour_3 = cv2.cvtColor(img, cv2.COLOR_GRAY2BGR)
 max_len = max(map(lambda x: len(x), contours))
 longest_contour = list(filter(lambda x: len(x) == max_len, contours))
 
@@ -70,14 +71,16 @@ epsilon_2 = 0.02 * cv2.arcLength(longest_contour[0], True)
 
 approx_1 = cv2.approxPolyDP(longest_contour[0], epsilon_1, True)
 approx_2 = cv2.approxPolyDP(longest_contour[0], epsilon_2, True)
-
+hull = cv2.convexHull(longest_contour[0])
 
 cv2.drawContours(img_contour_1, list([approx_1]), -1, (0, 255, 0), 2)
-cv2.drawContours(img_contour_2, list([approx_2]), -1, (0, 255, 0), 2)
-titles = ['Original Binary', 'approx_epsilon_smaller', 'approx_epsilon_bigger']
-imgs = [img, img_contour_1, img_contour_2]
-for i in range(3):
-    plt.subplot(3, 1, i + 1), plt.imshow(imgs[i], cmap='gray'), plt.title(titles[i])
+cv2.drawContours(img_contour_2, list([approx_1]), -1, (0, 255, 0), 2)
+cv2.drawContours(img_contour_3, list([hull]), -1, (0, 255, 0), 2)
+
+titles = ['Original Binary', 'approx_epsilon_smaller', 'approx_epsilon_bigger', 'hull']
+imgs = [img, img_contour_1, img_contour_2, img_contour_3]
+for i in range(4):
+    plt.subplot(2, 2, i + 1), plt.imshow(imgs[i], cmap='gray'), plt.title(titles[i])
     plt.xticks([]), plt.yticks([])
 plt.show()
 

@@ -1,9 +1,9 @@
 # -*-coding:utf-8-*-
 import cv2
+from cvutils import utils
 import numpy as np
 
 from cvgui.managers import WindowManager, CaptureManager
-from basic_functions import image_processing
 
 
 class Scratch(object):
@@ -17,7 +17,9 @@ class Scratch(object):
             self._capture_manager.enter_frame()
             frame = self._capture_manager.frame
             if frame is not None:
-                self._capture_manager.frame = image_processing.filter_out_black(frame)
+                # TODO
+                gray = utils.convert2binary(frame)
+                self._capture_manager.frame = utils.detect_contour(gray, frame, max_n_contours=1)
             self._capture_manager.exit_frame()
             self._window_manager.process_events()
 
@@ -39,4 +41,4 @@ class Scratch(object):
 
 
 if __name__ == "__main__":
-    Scratch("street.mp4").run()
+    Scratch(0).run()
