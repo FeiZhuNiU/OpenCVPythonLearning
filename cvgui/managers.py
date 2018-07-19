@@ -15,6 +15,8 @@ class CaptureManager(object):
         # 标识是否已经grab()
         self._entered_frame = False
         self._frame = None
+        # 用于保存帧处理过程中的二值图像
+        self._binary_image = None
         self._image_file_name = None
         self._video_file_name = None
         self._video_encoding = None
@@ -35,6 +37,15 @@ class CaptureManager(object):
         if self._channel != value:
             self._channel = value
             self._frame = None
+
+    @property
+    def bin_image(self):
+        return self._binary_image
+
+    @bin_image.setter
+    def bin_image(self, binary_image):
+        if binary_image is not None:
+            self._binary_image = binary_image
 
     @property
     def frame(self):
@@ -85,11 +96,14 @@ class CaptureManager(object):
 
         if self.is_writing_image:
             cv2.imwrite(self._image_file_name, self._frame)
+            if self._binary_image is not None:
+                cv2.imwrite(self._image_file_name+"_bin.png", self._binary_image)
             self._image_file_name = None
 
         self._write_video_frame()
 
         self._frame = None
+        self._binary_image = None
         self._entered_frame = False
 
     # 记录保存图像的文件名

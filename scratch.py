@@ -18,8 +18,9 @@ class Scratch(object):
             frame = self._capture_manager.frame
             if frame is not None:
                 # TODO
-                gray = utils.convert2binary(frame)
-                self._capture_manager.frame = utils.detect_contour(gray, frame, max_n_contours=1)
+                self._capture_manager.bin_image = utils.convert2binary(frame, ksize=51)
+                self._capture_manager.bin_image = utils.edge_detection(self._capture_manager.bin_image)
+                self._capture_manager.frame = utils.detect_and_draw_lines(self._capture_manager.bin_image, frame)
             self._capture_manager.exit_frame()
             self._window_manager.process_events()
 
