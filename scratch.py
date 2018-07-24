@@ -22,6 +22,7 @@ class Scratch(object):
                 # self._capture_manager.bin_image = utils.edge_detection(self._capture_manager.bin_image)
                 # self._capture_manager.frame = utils.detect_and_draw_lines(self._capture_manager.bin_image, frame)
                 self._capture_manager.frame = utils.detect_face(frame)
+                self._capture_manager.frame = utils.detect_eyes(self._capture_manager.frame)
             self._capture_manager.exit_frame()
             self._window_manager.process_events()
 

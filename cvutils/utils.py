@@ -212,6 +212,14 @@ def detect_face(img):
         img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
 
 
+def detect_eyes(img):
+    eye_cascade = cv2.CascadeClassifier('./cascades/haarcascades/haarcascade_eye.xml')
+    gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    eyes = eye_cascade.detectMultiScale(gray, 1.03, 5, 0, (40, 40))
+    for (x, y, w, h) in eyes:
+        img = cv2.rectangle(img, (x, y), (x + w, y + h), (0, 0, 255), 1)
+
+
 if __name__ == "__main__":
     test = [1, 2, 3, 5, 7, 0]
     test.sort(reverse=True)
